@@ -2,7 +2,8 @@
 const express = require("express")
 const users = require("./users-model")
 const router = express.Router()
-
+// IMPORT CUSTOM MIDDLEWARE { DESTRUCTURED FUNCTION }
+const { checkUserID, checkUserData } = require('../middleware/user')
 
 
 router.get("/users", (req, res) => {
@@ -11,39 +12,48 @@ router.get("/users", (req, res) => {
 		.then((users) => {
 			res.status(200).json(users)
 		})
-		.catch((error) => {
-			console.log(error)
-			res.status(500).json({
-				message: "Error retrieving the users",
-			})
+		.catch((error) => { 
+         // PASSES TO ERROR MIDDLEWARE WHEN NEXT HAS A PARAMETER
+         // ALLOWS US TO CALL NEXT() WITH D.R.Y CODE
+         // ***TO BE USED WITH SERVER SIDE ERRORS - 500 TYPE***
+         next(error)
+			// console.log(error)
+			// res.status(500).json({
+			// 	message: "Error retrieving the users",
+			// })
 		})
 })
-
-router.get("/users/:id", (req, res) => {
-	users.findById(req.params.id)
-		.then((user) => {
-			if (user) {
-				res.status(200).json(user)
-			} else {
-				res.status(404).json({
-					message: "User not found",
-				})
-			}
-		})
-		.catch((error) => {
-			console.log(error)
-			res.status(500).json({
-				message: "Error retrieving the user",
-			})
-		})
+// CUSTOM MIDDLEWARE 
+router.get("/users/:id",checkUserID(),  (req, res) => {
+   // ALL THIS CODE IS NOW IN USER.JS MIDDLEWARE
+   // ==========================================
+	// users.findById(req.params.id)
+	// 	.then((user) => {
+	// 		if (user) {
+            // ACCESSING THE REQUEST BEING PASSED THROUGH THE STACK
+            // IN 'REQUEST'
+				res.status(200).json(req.user) //
+		// 	} else {
+		// 		res.status(404).json({
+		// 			message: "User not found",
+		// 		})
+		// 	}
+		// })
+		// .catch((error) => {
+		// 	console.log(error)
+		// 	res.status(500).json({
+		// 		message: "Error retrieving the user",
+		// 	})
+		// })
 })
 
-router.post("/users", (req, res) => {
-	if (!req.body.name || !req.body.email) {
-		return res.status(400).json({
-			message: "Missing user name or email",
-		})
-	}
+router.post("/users", checkUserData(), (req, res) => {
+   // IN USER.JS
+	// if (!req.body.name || !req.body.email) {
+	// 	return res.status(400).json({
+	// 		message: "Missing user name or email",
+	// 	})
+	// }
 
 	users.add(req.body)
 		.then((user) => {
@@ -57,12 +67,13 @@ router.post("/users", (req, res) => {
 		})
 })
 
-router.put("/users/:id", (req, res) => {
-	if (!req.body.name || !req.body.email) {
-		return res.status(400).json({
-			message: "Missing user name or email",
-		})
-	}
+router.put("/users/:id", checkUserData(), checkUserID(), (req, res) => {
+   // IN USER.JS
+	// if (!req.body.name || !req.body.email) {
+	// 	return res.status(400).json({
+	// 		message: "Missing user name or email",
+	// 	})
+	// }
 
 	users.update(req.params.id, req.body)
 		.then((user) => {

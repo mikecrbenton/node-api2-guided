@@ -1,15 +1,16 @@
 {
 	"private": true,
 	"scripts": {
-      "start": "node index.js",
-      "watch": "nodemon index.js"
-   },
+		"start": "node index.js",
+		"watch": "nodemon index.js"
+	},
 	"devDependencies": {
 		"nodemon": "^2.0.4"
 	},
 	"dependencies": {
 		"express": "^4.17.1",
 		"knex": "^0.21.6",
+		"morgan": "^1.10.0",
 		"sqlite3": "^5.0.0"
 	}
 }
