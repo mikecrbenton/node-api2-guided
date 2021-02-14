@@ -4,7 +4,7 @@ const db = knex(config.development)
 
 function find(query = {}) {
 
-   //QUERY STRINGS
+   //QUERY STRINGS ( ? ,  =  ,  &  )
 	const { page = 1, limit = 100, sortBy = "id", sortDir = "asc" } = query
 	const offset = limit * (page - 1)
 

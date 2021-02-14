@@ -15,3 +15,11 @@ In this project we will learn how to create a very simple Web API using `Node.js
 - [ ] type `npm install` to download dependencies.
 
 Please follow along as the instructor builds the API step by step.
+
+Query String================================
+- Order doesn't matter
+- Better solution when working with generic metadata ( not dealing with endpoints)
+Start: ?
+Key value:  =
+Separation: &
+

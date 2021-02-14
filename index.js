@@ -1,5 +1,5 @@
 const express = require("express")
-const users = require("./users/users-model")
+//const users = require("./users/users-model") // NOW IN ROUTER
 const morgan = require("morgan")
 const deny = require("./middleware/deny")
 
@@ -16,9 +16,9 @@ server.use(express.json())
 server.use( deny() )
 server.use( logger("long") ) // static variable being passed
 
-
-
-server.use(usersRouter) //import
+// ATTACH SUB-ROUTERS TO MAIN APPLICATION - ORDER IS IMPORTANT LIKE CSS IN CASE OF 
+// DUPLICATE ROUTES
+server.use(usersRouter) 
 server.use(welcomeRouter)
 
 // ERROR MIDDLEWARE ( 4 params )

@@ -1,5 +1,5 @@
-const express = require('express')
-const router = express.Router()
+const express = require('express')  // MAIN IMPORT ( LIKE REACT )
+const router = express.Router()     // CREATE NEW BRANCH / ROUTER
 
 router.get("/", (req, res) => {
 	res.json({
@@ -7,4 +7,4 @@ router.get("/", (req, res) => {
 	})
 })
 
-module.exports = router
+module.exports = router             // EXPORT 

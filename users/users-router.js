@@ -1,14 +1,18 @@
-//standalone router with Express
+// FILE FOR STANDALONE ROUTER WITH EXPRESS
 const express = require("express")
+// FUNCTIONS
 const users = require("./users-model")
+// CREATE A ROUTER W/EXPRESS
 const router = express.Router()
 // IMPORT CUSTOM MIDDLEWARE { DESTRUCTURED FUNCTION }
 const { checkUserID, checkUserData } = require('../middleware/user')
 
 
 router.get("/users", (req, res) => {
+   // WORKING WITH QUERY STRINGS
+   console.log(req.query)
 
-	users.find(req.query) // QUERY STRING PARAMATER EXAMPLE
+	users.find(req.query) // QUERY STRING PARAMETER EXAMPLE(sortBy, limit etc..)
 		.then((users) => {
 			res.status(200).json(users)
 		})
@@ -147,7 +151,7 @@ router.get("/users/:userId/posts/:postId", (req,res)=>{
 router.post("/users/:id/posts", (req,res) => {
 
    if(!req.body.text) {
-      // needs a 'return' to end/stop the function if not using an else{}
+      // ** needs a 'return' to end/stop the function if not using an else{} **
       return res.status(400).json( {message:"Need a text value"})
    }
    users.addUserPost( req.params.id, req.body )
@@ -161,5 +165,5 @@ router.post("/users/:id/posts", (req,res) => {
 
 })
 
-//module is way to export in node
+//module.exports is the way to export in node
 module.exports = router
