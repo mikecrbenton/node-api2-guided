@@ -1,10 +1,10 @@
 const usersModel = require('../users/users-model')
 
-
 // these are re-usable functions that can now be called in
 // any of the endpoints to check for the user id, or other
 // checks
 
+// HIGHER ORDER FUNCTION ( IN CASE PARAMETERS NEED TO BE PASSED )
 function checkUserID() {
    return (req,res,next) => {
       usersModel.findById(req.params.id)
@@ -12,8 +12,8 @@ function checkUserID() {
             if (user) {
                // ATTACH DATA TO THE REQUEST SO IT CAN BE ACCESSED
                // IN THE STACK OF MIDDLEWARE FUNCTIONS AS IT IS
-               // PASSED ALONG
-               req.user = user;
+               // PASSED ALONG :     next() -->  router.get()  
+               req.fooBar = user;
                next() //middleware continues if conditions met
             } else {
                res.status(404).json({
@@ -29,7 +29,7 @@ function checkUserID() {
          })
    }
 }
-
+// HIGHER ORDER FUNCTION ( IN CASE PARAMETERS NEED TO BE PASSED )
 function checkUserData() {
    return (req,res,next) => {
       if (!req.body.name || !req.body.email) {

@@ -8,7 +8,7 @@ const router = express.Router()
 const { checkUserID, checkUserData } = require('../middleware/user')
 
 
-router.get("/users", (req, res) => {
+router.get("/users", (req, res, next) => {
    // WORKING WITH QUERY STRINGS
    console.log(req.query)
 
@@ -17,9 +17,10 @@ router.get("/users", (req, res) => {
 			res.status(200).json(users)
 		})
 		.catch((error) => { 
-         // PASSES TO ERROR MIDDLEWARE WHEN NEXT HAS A PARAMETER
+         // PASSES TO ERROR MIDDLEWARE ****WHEN next() HAS A PARAMETER****
+         // SKIPS DOWN STACK TO ERROR MIDDLE WARE
          // ALLOWS US TO CALL NEXT() WITH D.R.Y CODE
-         // ***TO BE USED WITH SERVER SIDE ERRORS - 500 TYPE***
+         // ***ONLY TO BE USED WITH SERVER ERRORS - 500 TYPE, .catch()***
          next(error)
 			// console.log(error)
 			// res.status(500).json({
@@ -27,7 +28,16 @@ router.get("/users", (req, res) => {
 			// })
 		})
 })
-// CUSTOM MIDDLEWARE 
+// CUSTOM MIDDLEWARE "SUB-STACKS" ( GLOBAL > SUB-STACKS )
+
+// Why don't we need to pass (req,res) to middleware?
+// Express makes req & res available as global state
+// as they're passed down the middleware/routing stack
+
+// Why can't middleware be called inside the function ?
+// Because it's asynchronous, and would jump the gun
+// if it wasn't in the middle-ware stack
+
 router.get("/users/:id",checkUserID(),  (req, res) => {
    // ALL THIS CODE IS NOW IN USER.JS MIDDLEWARE
    // ==========================================
@@ -36,7 +46,7 @@ router.get("/users/:id",checkUserID(),  (req, res) => {
 	// 		if (user) {
             // ACCESSING THE REQUEST BEING PASSED THROUGH THE STACK
             // IN 'REQUEST'
-				res.status(200).json(req.user) //
+				res.status(200).json(req.fooBar) //NAMED IN MIDDLEWARE req.user
 		// 	} else {
 		// 		res.status(404).json({
 		// 			message: "User not found",
@@ -51,7 +61,7 @@ router.get("/users/:id",checkUserID(),  (req, res) => {
 		// })
 })
 
-router.post("/users", checkUserData(), (req, res) => {
+router.post("/users", checkUserData(), (req, res, next) => {
    // IN USER.JS
 	// if (!req.body.name || !req.body.email) {
 	// 	return res.status(400).json({
@@ -64,14 +74,15 @@ router.post("/users", checkUserData(), (req, res) => {
 			res.status(201).json(user)
 		})
 		.catch((error) => {
-			console.log(error)
-			res.status(500).json({
-				message: "Error adding the user",
-			})
+			// console.log(error)
+			// res.status(500).json({
+			// 	message: "Error adding the user",
+			// })
+         next(error)
 		})
 })
 
-router.put("/users/:id", checkUserData(), checkUserID(), (req, res) => {
+router.put("/users/:id", checkUserData(), checkUserID(), (req, res, next) => {
    // IN USER.JS
 	// if (!req.body.name || !req.body.email) {
 	// 	return res.status(400).json({
@@ -90,14 +101,15 @@ router.put("/users/:id", checkUserData(), checkUserID(), (req, res) => {
 			}
 		})
 		.catch((error) => {
-			console.log(error)
-			res.status(500).json({
-				message: "Error updating the user",
-			})
+			// console.log(error)
+			// res.status(500).json({
+			// 	message: "Error updating the user",
+			// })
+         next(error)
 		})
 })
 
-router.delete("/users/:id", (req, res) => {
+router.delete("/users/:id", (req, res, next) => {
 	users.remove(req.params.id)
 		.then((count) => {
 			if (count > 0) {
@@ -111,23 +123,25 @@ router.delete("/users/:id", (req, res) => {
 			}
 		})
 		.catch((error) => {
-			console.log(error)
-			res.status(500).json({
-				message: "Error removing the user",
-			})
+			// console.log(error)
+			// res.status(500).json({
+			// 	message: "Error removing the user",
+			// })
+         next(error)
 		})
 })
 
 // create endpoint that returns all the posts for a user
 
-router.get("/users/:id/posts", (req,res) => {
+router.get("/users/:id/posts", (req,res,next) => {
    users.findUserPosts(req.params.id)
       .then( (response) => {
          res.json(response)
       })
       .catch( (err) => { 
-         console.log(err) // for developer
-         res.status(500).json({ message:"Never send back unknown 500+ errors to the client - use general"}) 
+         // console.log(err) // for developer
+         // res.status(500).json({ message:"Never send back unknown 500+ errors to the client - use general"}) 
+         next(error)
       })
 })
 // create endpoint that returns a single post for a user
